@@ -21,6 +21,7 @@ from adapt.intent import IntentBuilder
 from mycroft.messagebus.message import Message
 from mycroft.skills.core import MycroftSkill
 
+import time
 __author__ = 'seanfitz'
 
 
@@ -36,6 +37,8 @@ class NapTimeSkill(MycroftSkill):
     def handle_intent(self, message):
         self.emitter.emit(Message('recognizer_loop:sleep'))
         self.speak_dialog("sleep")
+        time.sleep(3)
+        self.enclosure.eyes_narrow()
 
     def stop(self):
         pass
