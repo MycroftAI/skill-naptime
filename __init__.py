@@ -20,6 +20,7 @@ from adapt.intent import IntentBuilder
 
 from mycroft.messagebus.message import Message
 from mycroft.skills.core import MycroftSkill
+from mycroft.audio import wait_while_speaking
 
 import time
 __author__ = 'seanfitz'
@@ -34,11 +35,21 @@ class NapTimeSkill(MycroftSkill):
             "SleepCommand").build()
         self.register_intent(naptime_intent, self.handle_intent)
 
+        self.add_event('recognizer_loop:awoken', self.handle_awoken)
+
     def handle_intent(self, message):
         self.emitter.emit(Message('recognizer_loop:sleep'))
         self.speak_dialog("sleep")
-        time.sleep(3)
+        time.sleep(2)
+        wait_while_speaking()
         self.enclosure.eyes_narrow()
+
+    def handle_awoken(self, message):
+        self.enclosure.eyes_blink('b')
+        self.speak_dialog("iamawake")
+        time.sleep(2)
+        wait_while_speaking()
+        self.enclosure.eyes_reset()
 
     def stop(self):
         pass
