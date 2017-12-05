@@ -14,25 +14,29 @@
 
 from adapt.intent import IntentBuilder
 
+from mycroft import MycroftSkill, intent_handler
 from mycroft.messagebus.message import Message
-from mycroft.skills.core import MycroftSkill
 from mycroft.audio import wait_while_speaking
 
 import time
 
 
 class NapTimeSkill(MycroftSkill):
-    def __init__(self):
-        super(NapTimeSkill, self).__init__(name="NapTimeSkill")
-
+    """
+        Skill to handle mycroft speech client listener sleeping and
+        awakening.
+    """
     def initialize(self):
-        naptime_intent = IntentBuilder("NapTimeIntent").require(
-            "SleepCommand").build()
-        self.register_intent(naptime_intent, self.handle_intent)
-
         self.add_event('recognizer_loop:awoken', self.handle_awoken)
 
-    def handle_intent(self, message):
+    @intent_handler(IntentBuilder("NapTimeIntent").require("SleepCommand"))
+    def handle_go_to_sleep(self, message):
+        """
+            Intent handler for "go to sleep" command.
+
+            Sends a message to the speech client setting the listener in a
+            sleep mode.
+        """
         self.emitter.emit(Message('recognizer_loop:sleep'))
         self.speak_dialog("sleep")
         time.sleep(2)
@@ -40,6 +44,12 @@ class NapTimeSkill(MycroftSkill):
         self.enclosure.eyes_narrow()
 
     def handle_awoken(self, message):
+        """
+            Handler for the recognizer_loop:awoken message (sent when the
+            listener in the speech client is awoken.
+
+            Speak the "I am awake" dialog and reset eyes to ready state.
+        """
         self.enclosure.eyes_blink('b')
         self.speak_dialog("iamawake")
         time.sleep(2)
