@@ -27,37 +27,76 @@ class NapTimeSkill(MycroftSkill):
         awakening.
     """
     def initialize(self):
-        self.add_event('recognizer_loop:awoken', self.handle_awoken)
+        self.sleeping = False
+        self.old_brightness = 30
+        self.add_event('mycroft.awoken', self.handle_awoken)
 
     @intent_handler(IntentBuilder("NapTimeIntent").require("SleepCommand"))
     def handle_go_to_sleep(self, message):
         """
-            Intent handler for "go to sleep" command.
-
             Sends a message to the speech client setting the listener in a
             sleep mode.
         """
+        self.speak_dialog("going.to.sleep")
         self.emitter.emit(Message('recognizer_loop:sleep'))
-        self.speak_dialog("sleep")
+        self.sleeping = True
+        wait_while_speaking()
         time.sleep(2)
         wait_while_speaking()
         self.enclosure.eyes_narrow()
 
+        # Dim and look downward to 'go to sleep'
+        # TODO: Get current brightness from somewhere
+        self.old_brightness = 30
+        for i in range (0, (self.old_brightness-10)/2):
+            self.enclosure.eyes_brightness(self.old_brightness - i*2)
+            time.sleep(0.1)
+        time.sleep(0.5)  # gives the brightness command time to finish
+        self.enclosure.eyes_look("d")
+        self.emitter.emit(Message('mycroft.volume.mute',
+                                  data={"speak_message": False}))
+
+
     def handle_awoken(self, message):
         """
-            Handler for the recognizer_loop:awoken message (sent when the
-            listener in the speech client is awoken.
-
-            Speak the "I am awake" dialog and reset eyes to ready state.
+            Handler for the mycroft.awoken message (sent when the listener
+            hears 'Hey Mycroft, Wake Up')
         """
-        self.enclosure.eyes_blink('b')
-        self.speak_dialog("iamawake")
-        time.sleep(2)
-        wait_while_speaking()
+        # Mild animation to come out of sleep from voice command
+        # pop open eyes and wait a sec
         self.enclosure.eyes_reset()
+        time.sleep(1)
+        # brighten up and blink
+        self.enclosure.eyes_brightness(15)
+        self.enclosure.eyes_blink('b')
+        time.sleep(1)
+        # brighten the rest of the way and annouce "I'm awake"
+        self.enclosure.eyes_brightness(self.old_brightness)
+        self.speak_dialog("i.am.awake")
+        self.awaken()
+
+        wait_while_speaking()
+
+    def awaken(self):
+        self.emitter.emit(Message('mycroft.volume.unmute',
+                                  data={"speak_message": False}))
+        self.sleeping = False
 
     def stop(self):
-        pass
+        # Wake it up quietly when the button is pressed
+        if self.sleeping:
+            # brighten eyes slowly
+            self.enclosure.eyes_reset()
+            for i in range (0, (self.old_brightness-10)/2):
+                self.enclosure.eyes_brightness(10 + i*2)
+                time.sleep(0.1)
+            # And blink
+            self.enclosure.eyes_blink('b')
+            self.emitter.emit(Message('recognizer_loop:wake_up'))
+            self.awaken()
+            return True
+        else:
+            return False
 
 
 def create_skill():
