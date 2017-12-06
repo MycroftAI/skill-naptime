@@ -1,14 +1,19 @@
 ## Nap time
-A skill to put the Mycroft listener to sleep.
+Put Mycroft to sleep when you don't want to be disturbed
 
 ## Description 
-While asleep Mycroft will not react to any queries (and will not send any sentences for parsing by the STT) until the device is awoken by the words "Hey Mycroft, Wake up".
+Tell Mycroft to sleep when you don't want to be disturbed in any way.
+This stops all calls to Speech to Text system, guaranteeing your voice won't
+be sent anywhere on an accidental activation.
+
+When sleeping, Mycroft will only listen locally for the phrase "Hey Mycroft,
+wake up". Otherwise the system will be totally silent and won't bother you.
+On a Mark 1 this also dims the eyes.
 
 ## Examples 
-* "go to sleep"
-* "nap time"
-* "sleepy tea time"
-* "wake up"
+* "Go to sleep"
+* "Nap time"
+* "Wake up"
 
 ## Credits 
 Mycroft AI
