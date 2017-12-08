@@ -1,44 +1,102 @@
-# Copyright 2016 Mycroft AI, Inc.
+# Copyright 2017, Mycroft AI Inc.
 #
-# This file is part of Mycroft Core.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# Mycroft Core is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
-# Mycroft Core is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
-
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 from adapt.intent import IntentBuilder
 
+from mycroft import MycroftSkill, intent_handler
 from mycroft.messagebus.message import Message
-from mycroft.skills.core import MycroftSkill
+from mycroft.audio import wait_while_speaking
 
-__author__ = 'seanfitz'
+import time
 
 
 class NapTimeSkill(MycroftSkill):
-    def __init__(self):
-        super(NapTimeSkill, self).__init__(name="NapTimeSkill")
-
+    """
+        Skill to handle mycroft speech client listener sleeping and
+        awakening.
+    """
     def initialize(self):
-        naptime_intent = IntentBuilder("NapTimeIntent").require(
-            "SleepCommand").build()
-        self.register_intent(naptime_intent, self.handle_intent)
+        self.sleeping = False
+        self.old_brightness = 30
+        self.add_event('mycroft.awoken', self.handle_awoken)
 
-    def handle_intent(self, message):
+    @intent_handler(IntentBuilder("NapTimeIntent").require("SleepCommand"))
+    def handle_go_to_sleep(self, message):
+        """
+            Sends a message to the speech client setting the listener in a
+            sleep mode.
+        """
+        self.speak_dialog("going.to.sleep")
         self.emitter.emit(Message('recognizer_loop:sleep'))
-        self.speak_dialog("sleep")
+        self.sleeping = True
+        wait_while_speaking()
+        time.sleep(2)
+        wait_while_speaking()
+        self.enclosure.eyes_narrow()
+
+        # Dim and look downward to 'go to sleep'
+        # TODO: Get current brightness from somewhere
+        self.old_brightness = 30
+        for i in range (0, (self.old_brightness-10)/2):
+            self.enclosure.eyes_brightness(self.old_brightness - i*2)
+            time.sleep(0.1)
+        time.sleep(0.5)  # gives the brightness command time to finish
+        self.enclosure.eyes_look("d")
+        self.emitter.emit(Message('mycroft.volume.mute',
+                                  data={"speak_message": False}))
+
+
+    def handle_awoken(self, message):
+        """
+            Handler for the mycroft.awoken message (sent when the listener
+            hears 'Hey Mycroft, Wake Up')
+        """
+        # Mild animation to come out of sleep from voice command
+        # pop open eyes and wait a sec
+        self.enclosure.eyes_reset()
+        time.sleep(1)
+        # brighten up and blink
+        self.enclosure.eyes_brightness(15)
+        self.enclosure.eyes_blink('b')
+        time.sleep(1)
+        # brighten the rest of the way and annouce "I'm awake"
+        self.enclosure.eyes_brightness(self.old_brightness)
+        self.speak_dialog("i.am.awake")
+        self.awaken()
+
+        wait_while_speaking()
+
+    def awaken(self):
+        self.emitter.emit(Message('mycroft.volume.unmute',
+                                  data={"speak_message": False}))
+        self.sleeping = False
 
     def stop(self):
-        pass
+        # Wake it up quietly when the button is pressed
+        if self.sleeping:
+            # brighten eyes slowly
+            self.enclosure.eyes_reset()
+            for i in range (0, (self.old_brightness-10)/2):
+                self.enclosure.eyes_brightness(10 + i*2)
+                time.sleep(0.1)
+            # And blink
+            self.enclosure.eyes_blink('b')
+            self.emitter.emit(Message('recognizer_loop:wake_up'))
+            self.awaken()
+            return True
+        else:
+            return False
 
 
 def create_skill():
