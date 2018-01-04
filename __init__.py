@@ -79,8 +79,9 @@ class NapTimeSkill(MycroftSkill):
         wait_while_speaking()
 
     def awaken(self):
-        self.emitter.emit(Message('mycroft.volume.unmute',
-                                  data={"speak_message": False}))
+        if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
+            self.emitter.emit(Message('mycroft.volume.unmute',
+                                      data={"speak_message": False}))
         self.sleeping = False
 
     def stop(self):
