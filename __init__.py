@@ -53,8 +53,9 @@ class NapTimeSkill(MycroftSkill):
             time.sleep(0.1)
         time.sleep(0.5)  # gives the brightness command time to finish
         self.enclosure.eyes_look("d")
-        self.emitter.emit(Message('mycroft.volume.mute',
-                                  data={"speak_message": False}))
+        if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
+            self.emitter.emit(Message('mycroft.volume.mute',
+                                      data={"speak_message": False}))
 
 
     def handle_awoken(self, message):
@@ -78,8 +79,9 @@ class NapTimeSkill(MycroftSkill):
         wait_while_speaking()
 
     def awaken(self):
-        self.emitter.emit(Message('mycroft.volume.unmute',
-                                  data={"speak_message": False}))
+        if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
+            self.emitter.emit(Message('mycroft.volume.unmute',
+                                      data={"speak_message": False}))
         self.sleeping = False
 
     def stop(self):
