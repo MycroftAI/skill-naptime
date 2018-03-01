@@ -27,6 +27,7 @@ class NapTimeSkill(MycroftSkill):
         awakening.
     """
     def initialize(self):
+        self.started_by_skill = False
         self.sleeping = False
         self.old_brightness = 30
         self.add_event('mycroft.awoken', self.handle_awoken)
@@ -40,6 +41,7 @@ class NapTimeSkill(MycroftSkill):
         self.speak_dialog("going.to.sleep")
         self.emitter.emit(Message('recognizer_loop:sleep'))
         self.sleeping = True
+        self.started_by_skill = True
         wait_while_speaking()
         time.sleep(2)
         wait_while_speaking()
@@ -63,26 +65,27 @@ class NapTimeSkill(MycroftSkill):
             Handler for the mycroft.awoken message (sent when the listener
             hears 'Hey Mycroft, Wake Up')
         """
-        # Mild animation to come out of sleep from voice command
-        # pop open eyes and wait a sec
-        self.enclosure.eyes_reset()
-        time.sleep(1)
-        # brighten up and blink
-        self.enclosure.eyes_brightness(15)
-        self.enclosure.eyes_blink('b')
-        time.sleep(1)
-        # brighten the rest of the way and annouce "I'm awake"
-        self.enclosure.eyes_brightness(self.old_brightness)
-        self.speak_dialog("i.am.awake")
-        self.awaken()
-
-        wait_while_speaking()
+        if self.started_by_skill:
+            # Mild animation to come out of sleep from voice command
+            # pop open eyes and wait a sec
+            self.enclosure.eyes_reset()
+            time.sleep(1)
+            # brighten up and blink
+            self.enclosure.eyes_brightness(15)
+            self.enclosure.eyes_blink('b')
+            time.sleep(1)
+            # brighten the rest of the way and annouce "I'm awake"
+            self.enclosure.eyes_brightness(self.old_brightness)
+            self.speak_dialog("i.am.awake")
+            wait_while_speaking()
+         self.awaken()
 
     def awaken(self):
         if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
             self.emitter.emit(Message('mycroft.volume.unmute',
                                       data={"speak_message": False}))
         self.sleeping = False
+        self.started_by_skill = False
 
     def stop(self):
         # Wake it up quietly when the button is pressed
