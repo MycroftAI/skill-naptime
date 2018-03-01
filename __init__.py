@@ -78,7 +78,7 @@ class NapTimeSkill(MycroftSkill):
             self.enclosure.eyes_brightness(self.old_brightness)
             self.speak_dialog("i.am.awake")
             wait_while_speaking()
-         self.awaken()
+        self.awaken()
 
     def awaken(self):
         if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
