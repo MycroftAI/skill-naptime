@@ -52,7 +52,7 @@ class NapTimeSkill(MycroftSkill):
         self.old_brightness = 30
         for i in range (0, (self.old_brightness - 10) // 2):
             self.enclosure.eyes_brightness(self.old_brightness - i * 2)
-            time.sleep(0.1)
+            time.sleep(0.15)
         time.sleep(0.5)  # gives the brightness command time to finish
         self.enclosure.eyes_look("d")
         if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
