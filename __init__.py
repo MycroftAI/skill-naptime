@@ -59,26 +59,31 @@ class NapTimeSkill(MycroftSkill):
             self.emitter.emit(Message('mycroft.volume.mute',
                                       data={"speak_message": False}))
 
-
     def handle_awoken(self, message):
         """
             Handler for the mycroft.awoken message (sent when the listener
             hears 'Hey Mycroft, Wake Up')
         """
-        if self.started_by_skill:
-            # Mild animation to come out of sleep from voice command
-            # pop open eyes and wait a sec
-            self.enclosure.eyes_reset()
-            time.sleep(1)
-            # brighten up and blink
-            self.enclosure.eyes_brightness(15)
-            self.enclosure.eyes_blink('b')
-            time.sleep(1)
-            # brighten the rest of the way and annouce "I'm awake"
-            self.enclosure.eyes_brightness(self.old_brightness)
+        started_by_skill = self.started_by_skill
+
+        self.awaken()
+        if started_by_skill:
+            self.wake_up_animation()
+            # Announce that the unit is awake
             self.speak_dialog("i.am.awake")
             wait_while_speaking()
-        self.awaken()
+
+    def wake_up_animation(self):
+        """
+            Mild animation to come out of sleep from voice command.
+            Pop open eyes and wait a sec.
+        """
+        self.enclosure.eyes_reset()
+        time.sleep(1)
+        self.enclosure.eyes_blink('b')
+        time.sleep(1)
+        # brighten the rest of the way
+        self.enclosure.eyes_brightness(self.old_brightness)
 
     def awaken(self):
         if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
