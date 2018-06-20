@@ -93,17 +93,12 @@ class NapTimeSkill(MycroftSkill):
         self.started_by_skill = False
 
     def stop(self):
-        # Wake it up quietly when the button is pressed
+        """ Wake it up quietly when the button is pressed. """
         if self.sleeping:
-            # brighten eyes slowly
-            self.enclosure.eyes_reset()
-            for i in range (0, (self.old_brightness-10)/2):
-                self.enclosure.eyes_brightness(10 + i*2)
-                time.sleep(0.1)
-            # And blink
-            self.enclosure.eyes_blink('b')
-            self.emitter.emit(Message('recognizer_loop:wake_up'))
+            started_by_skill = self.started_by_skill
             self.awaken()
+            if started_by_skill:
+                self.wake_up_animation()
             return True
         else:
             return False
