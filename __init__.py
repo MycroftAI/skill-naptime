@@ -52,33 +52,38 @@ class NapTimeSkill(MycroftSkill):
         self.old_brightness = 30
         for i in range (0, (self.old_brightness - 10) // 2):
             self.enclosure.eyes_brightness(self.old_brightness - i * 2)
-            time.sleep(0.1)
+            time.sleep(0.15)
         time.sleep(0.5)  # gives the brightness command time to finish
         self.enclosure.eyes_look("d")
         if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
             self.emitter.emit(Message('mycroft.volume.mute',
                                       data={"speak_message": False}))
 
-
     def handle_awoken(self, message):
         """
             Handler for the mycroft.awoken message (sent when the listener
             hears 'Hey Mycroft, Wake Up')
         """
-        if self.started_by_skill:
-            # Mild animation to come out of sleep from voice command
-            # pop open eyes and wait a sec
-            self.enclosure.eyes_reset()
-            time.sleep(1)
-            # brighten up and blink
-            self.enclosure.eyes_brightness(15)
-            self.enclosure.eyes_blink('b')
-            time.sleep(1)
-            # brighten the rest of the way and annouce "I'm awake"
-            self.enclosure.eyes_brightness(self.old_brightness)
+        started_by_skill = self.started_by_skill
+
+        self.awaken()
+        if started_by_skill:
+            self.wake_up_animation()
+            # Announce that the unit is awake
             self.speak_dialog("i.am.awake")
             wait_while_speaking()
-        self.awaken()
+
+    def wake_up_animation(self):
+        """
+            Mild animation to come out of sleep from voice command.
+            Pop open eyes and wait a sec.
+        """
+        self.enclosure.eyes_reset()
+        time.sleep(1)
+        self.enclosure.eyes_blink('b')
+        time.sleep(1)
+        # brighten the rest of the way
+        self.enclosure.eyes_brightness(self.old_brightness)
 
     def awaken(self):
         if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
@@ -88,17 +93,12 @@ class NapTimeSkill(MycroftSkill):
         self.started_by_skill = False
 
     def stop(self):
-        # Wake it up quietly when the button is pressed
+        """ Wake it up quietly when the button is pressed. """
         if self.sleeping:
-            # brighten eyes slowly
-            self.enclosure.eyes_reset()
-            for i in range (0, (self.old_brightness-10)/2):
-                self.enclosure.eyes_brightness(10 + i*2)
-                time.sleep(0.1)
-            # And blink
-            self.enclosure.eyes_blink('b')
-            self.emitter.emit(Message('recognizer_loop:wake_up'))
+            started_by_skill = self.started_by_skill
             self.awaken()
+            if started_by_skill:
+                self.wake_up_animation()
             return True
         else:
             return False
