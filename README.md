@@ -1,4 +1,4 @@
-# <img src='https://rawgithub.com/FortAwesome/Font-Awesome/master/advanced-options/raw-svg/solid/bed.svg ' card_color='#22a7f0' width='50' height='50' style='vertical-align:bottom'/> Naptime
+# <img src='https://rawgithub.com/FortAwesome/Font-Awesome/master/advanced-options/raw-svg/solid/bed.svg' card_color='#22a7f0' width='50' height='50' style='vertical-align:bottom'/> Naptime
 Put Mycroft to sleep when you don't want to be disturbed
 
 ## About 
