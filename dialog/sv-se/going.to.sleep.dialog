@@ -1,2 +1,2 @@
-Jag lägger mig.  Säg 'Hey Mycroft, wake up' för att väcka mig.
-Sover.  Säg 'Hey Mycroft, wake up' för att få upp mig.
+Jag lägger mig.  Säg '{{wake_word}}, wake up' för att väcka mig.
+Sover.  Säg '{{wake_word}}, wake up' för att få upp mig.

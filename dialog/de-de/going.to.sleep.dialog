@@ -1,4 +1,4 @@
-Ich gehe jetzt schlafen. Sag 'Hey Mycroft, wach auf, um meine Aufmerksamkeit wieder zu bekommen.
-Ich gehe jetzt schlafen. Sag 'Hey Mycroft, wach auf', um mich aufzuwecken.
-In Ordnung ich gehe schlafen. Du kannst mich aufwecken, indem du 'Hey Mycroft, wach' sagst.
+Ich gehe jetzt schlafen. Sag '{{wake_word}}, wach auf, um meine Aufmerksamkeit wieder zu bekommen.
+Ich gehe jetzt schlafen. Sag '{{wake_word}}, wach auf', um mich aufzuwecken.
+In Ordnung ich gehe schlafen. Du kannst mich aufwecken, indem du '{{wake_word}}, wach' sagst.
 
