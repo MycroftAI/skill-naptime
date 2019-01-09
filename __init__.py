@@ -17,6 +17,7 @@ from adapt.intent import IntentBuilder
 from mycroft import MycroftSkill, intent_handler
 from mycroft.messagebus.message import Message
 from mycroft.audio import wait_while_speaking
+from mycroft.configuration.config import Configuration
 
 import time
 
@@ -31,6 +32,7 @@ class NapTimeSkill(MycroftSkill):
         self.sleeping = False
         self.old_brightness = 30
         self.add_event('mycroft.awoken', self.handle_awoken)
+        self.wake_word = Configuration.get()['listener']['wake_word']
 
     @intent_handler(IntentBuilder("NapTimeIntent").require("SleepCommand"))
     def handle_go_to_sleep(self, message):
@@ -38,7 +40,7 @@ class NapTimeSkill(MycroftSkill):
             Sends a message to the speech client setting the listener in a
             sleep mode.
         """
-        self.speak_dialog("going.to.sleep")
+        self.speak_dialog('going.to.sleep', dict(wake_word=self.wake_word))
         self.bus.emit(Message('recognizer_loop:sleep'))
         self.sleeping = True
         self.started_by_skill = True

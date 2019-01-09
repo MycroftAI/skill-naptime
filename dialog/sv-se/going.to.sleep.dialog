@@ -1,3 +1,2 @@
-Jag lägger mig i sovläge. Säg 'Hej Mycroft, wake up' för att väcka mig
-Sover nu. Säg 'Hey Mycroft, wake up' för att väcka mig
-Okej, sover. Du kan skaka liv i mig genom att säga 'Hey Mycroft, wake up'.
+Jag lägger mig.  Säg '{{wake_word}}, wake up' för att väcka mig.
+Sover.  Säg '{{wake_word}}, wake up' för att få upp mig.
