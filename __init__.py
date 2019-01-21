@@ -40,8 +40,8 @@ class NapTimeSkill(MycroftSkill):
             Sends a message to the speech client setting the listener in a
             sleep mode.
 
-            If the user has been told about the sleep mode once already, it
-            sends a shorter message.
+            If the user has been told about the waking up process five times
+            already, it sends a shorter message.
         """
         
         count = self.settings.get('Wake up explanation count')
