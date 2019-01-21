@@ -45,7 +45,7 @@ class NapTimeSkill(MycroftSkill):
         """
         
         if self.settings.get('Already explained sleep') is None:
-            self.settings['Already explained sleep'] = true
+            self.settings['Already explained sleep'] = True
             self.speak_dialog('going.to.sleep', dict(wake_word=self.wake_word))
         else:
             self.speak_dialog('going.to.sleep.short', dict(wake_word=self.wake_word))
