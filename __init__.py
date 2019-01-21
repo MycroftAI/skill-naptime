@@ -44,9 +44,12 @@ class NapTimeSkill(MycroftSkill):
             sends a shorter message.
         """
         
-        if self.settings.get('Already explained sleep') is None:
-            self.settings['Already explained sleep'] = True
+        if self.settings.get('Wake up explanation count') is None:
+            self.settings['Wake up explanation count'] = 1
+        
+        if (self.settings['Sleep explanation count'] <= 5)
             self.speak_dialog('going.to.sleep', dict(wake_word=self.wake_word))
+            self.settings['Wake up explanation count'] += 1
         else:
             self.speak_dialog('going.to.sleep.short', dict(wake_word=self.wake_word))
         
