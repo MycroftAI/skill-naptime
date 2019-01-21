@@ -47,7 +47,7 @@ class NapTimeSkill(MycroftSkill):
         if self.settings.get('Wake up explanation count') is None:
             self.settings['Wake up explanation count'] = 1
         
-        if (self.settings['Sleep explanation count'] <= 5)
+        if (self.settings['Wake up explanation count'] <= 5)
             self.speak_dialog('going.to.sleep', dict(wake_word=self.wake_word))
             self.settings['Wake up explanation count'] += 1
         else:
