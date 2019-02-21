@@ -105,17 +105,6 @@ class NapTimeSkill(MycroftSkill):
         self.sleeping = False
         self.started_by_skill = False
 
-    def stop(self):
-        """ Wake it up quietly when the button is pressed. """
-        if self.sleeping:
-            started_by_skill = self.started_by_skill
-            self.awaken()
-            if started_by_skill:
-                self.wake_up_animation()
-            return True
-        else:
-            return False
-
 
 def create_skill():
     return NapTimeSkill()
