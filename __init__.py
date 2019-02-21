@@ -43,13 +43,12 @@ class NapTimeSkill(MycroftSkill):
             If the user has been told about the waking up process five times
             already, it sends a shorter message.
         """
-        
         count = self.settings.get('Wake up count', 0)
         count += 1
         self.settings['Wake up count'] = count
         
         if count <= 5:
-            self.speak_dialog('going.to.sleep')
+            self.speak_dialog('going.to.sleep', {'wake_word': self.wake_word})
         else:
             self.speak_dialog('going.to.sleep.short')
         
