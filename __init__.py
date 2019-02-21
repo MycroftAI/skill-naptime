@@ -39,8 +39,20 @@ class NapTimeSkill(MycroftSkill):
         """
             Sends a message to the speech client setting the listener in a
             sleep mode.
+
+            If the user has been told about the waking up process five times
+            already, it sends a shorter message.
         """
-        self.speak_dialog('going.to.sleep', dict(wake_word=self.wake_word))
+        
+        count = self.settings.get('Wake up count', 0)
+        count += 1
+        self.settings['Wake up count'] = count
+        
+        if count <= 5:
+            self.speak_dialog('going.to.sleep')
+        else:
+            self.speak_dialog('going.to.sleep.short')
+        
         self.bus.emit(Message('recognizer_loop:sleep'))
         self.sleeping = True
         self.started_by_skill = True
