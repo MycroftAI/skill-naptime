@@ -58,7 +58,6 @@ class NapTimeSkill(MycroftSkill):
         wait_while_speaking()
         time.sleep(2)
         wait_while_speaking()
-        self.enclosure.eyes_narrow()
 
         # Dim and look downward to 'go to sleep'
         # TODO: Get current brightness from somewhere
@@ -66,7 +65,6 @@ class NapTimeSkill(MycroftSkill):
         for i in range (0, (self.old_brightness - 10) // 2):
             self.enclosure.eyes_brightness(self.old_brightness - i * 2)
             time.sleep(0.15)
-        time.sleep(0.5)  # gives the brightness command time to finish
         self.enclosure.eyes_look("d")
         if self.config_core.get("enclosure").get("platform", "unknown") != "unknown":
             self.bus.emit(Message('mycroft.volume.mute',
