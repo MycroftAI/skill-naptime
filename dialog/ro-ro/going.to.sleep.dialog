@@ -1,3 +1,3 @@
-Voi dormi. "Spune" Hei Mycroft, trezește-te "pentru a-mi atrage din nou atenția.
-Merg la somn acum. "Spune" Hey Mycroft, trezește-te "ca să mă trezești.
-Bine, merg la culcare. Poți să mă trezești spunând "Hei Mycroft, trezește-te".
+Mă duc să dorm.  Spune '{{wake_word}}, trezește-te' pentru a-mi atrage atenția din nou.
+Merg la somn acum. "Spune '{{wake_word}}, trezirea" pentru a mă trezi.
+Bine, mergi la culcare. Poți să mă trezești spunând '{{wake_word}}, trezește-te'
