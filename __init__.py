@@ -30,6 +30,7 @@ class NapTimeSkill(MycroftSkill):
         self.old_brightness = 30
         self.add_event('mycroft.awoken', self.handle_awoken)
         self.wake_word = Configuration.get()['listener']['wake_word']
+        self.disabled_confirm_listening = False
 
     @intent_handler(IntentBuilder("NapTimeIntent").require("SleepCommand"))
     def handle_go_to_sleep(self, message):
@@ -65,6 +66,8 @@ class NapTimeSkill(MycroftSkill):
         if platform != "unknown":
             self.bus.emit(Message('mycroft.volume.mute',
                                   data={"speak_message": False}))
+        elif self.config_core['confirm_listening']:
+            self.disable_confirm_listening()
 
     def handle_awoken(self, message):
         """Handler for the mycroft.awoken message
@@ -98,9 +101,27 @@ class NapTimeSkill(MycroftSkill):
         if platform != "unknown":
             self.bus.emit(Message('mycroft.volume.unmute',
                                   data={"speak_message": False}))
+        elif self.disabled_confirm_listening:
+            self.enable_confirm_listening()
+
         self.sleeping = False
         self.started_by_skill = False
 
+    def disable_confirm_listening(self):
+        msg = Message('configuration.patch',
+                      data={'config': {'confirm_listening': False}}
+                      )
+        self.bus.emit(msg)
+        self.disabled_confirm_listening = True
+        self.log.info('Disabled chirp')
+
+    def enable_confirm_listening(self):
+        msg = Message('configuration.patch',
+                      data={'config': {'confirm_listening': True}}
+                      )
+        self.bus.emit(msg)
+        self.disabled_confirm_listening = False
+        self.log.info('Enabled chirp again')
 
 def create_skill():
     return NapTimeSkill()
