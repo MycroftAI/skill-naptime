@@ -90,7 +90,8 @@ class NapTimeSkill(MycroftSkill):
         if self.gui.connected:
             self.gui.remove_page("resting.qml")
             self.gui.show_page("awake.qml", override_idle=5)
-            # TODO this shouldn't be necessary - remove 2 lines when fixed.
+            # TODO Screen not reverting after the specified 5 seconds.
+            # The following 2 lines shouldn't be needed. Remove when fixed.
             time.sleep(5)
             self.gui.release()
         elif self.platform == 'mycroft_mark_1':
