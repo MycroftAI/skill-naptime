@@ -69,6 +69,16 @@ class NapTimeSkill(MycroftSkill):
             self.speak_dialog("i.am.awake")
             self.display_waking_face()
 
+    @intent_handler("wake-up.intent")
+    def handle_already_awake(self, _) -> None:
+        """Handle requests to wake up when the system is already awake.
+
+        If the user thought the device was in a sleep mode and tries to wake
+        it up this prevents that going to the Common Query fallbacks.
+        """
+        self.log.info("User tried to wake device, but device was not asleep.")
+        self.speak_dialog('already.awake')
+
     def display_sleep_face(self) -> None:
         """Display the sleeping face depending on the platform."""
         if self.gui.connected:
